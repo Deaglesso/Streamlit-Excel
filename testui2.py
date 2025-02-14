@@ -10,19 +10,23 @@ def calculate_row_price(sku, price_dict):
     total_price = 0
     sku = str(sku)
     products = sku.split('/+')
-    products = [product.strip('/ ') for product in products]
+    products = [product.strip('/ ').casefold() for product in products]  # Convert all to lowercase
 
-    shoe_count = len([p for p in products if p != 'Çorap'])
-    has_other_products = any(p != 'Çorap' for p in products)
-    
+    # Create a case-insensitive price dictionary
+    price_dict_lower = {key.casefold(): value for key, value in price_dict.items()}
+
+    shoe_count = len([p for p in products if p != 'çorap'])
+    has_other_products = any(p != 'çorap' for p in products)
+
     for product in products:
-        if product == 'Çorap':
-            total_price += 3 if has_other_products else price_dict['Çorap']
+        if product == 'çorap':
+            total_price += 3 if has_other_products else price_dict_lower.get('çorap', 0)
         else:
-            total_price += price_dict.get(product, 0)
-    
+            total_price += price_dict_lower.get(product, 0)
+
     discount = shoe_count - 1 if shoe_count > 1 else 0
     return total_price - discount
+
 
 
 # Function to mark duplicate order numbers
